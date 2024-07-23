@@ -1,0 +1,72 @@
+pipeline {
+    agent any
+
+    parameters {
+        choice(name: 'STAGES', choices: ['Dev', 'Test', 'Prod', 'All'], description: 'Choose the stages to execute')
+    }
+
+    stages {
+        stage('Dev') {
+            when {
+                expression { params.STAGES == 'Dev' || params.STAGES == 'All' }
+            }
+            steps {
+                script {
+                    echo 'Deploying to Dev environment...'
+                    // Add your Dev deployment steps here
+                }
+            }
+            post {
+                failure {
+                    script {
+                        error 'Dev stage failed. Aborting pipeline.'
+                    }
+                }
+            }
+        }
+
+        stage('Test') {
+            when {
+                expression { params.STAGES == 'Test' || params.STAGES == 'All' }
+            }
+            steps {
+                script {
+                    echo 'Running tests...'
+                    // Add your test steps here
+                }
+            }
+            post {
+                failure {
+                    script {
+                        error 'Test stage failed. Aborting pipeline.'
+                    }
+                }
+            }
+        }
+
+        stage('Prod') {
+            when {
+                expression { params.STAGES == 'Prod' || params.STAGES == 'All' }
+            }
+            steps {
+                script {
+                    echo 'Deploying to Prod environment...'
+                    // Add your Prod deployment steps here
+                }
+            }
+            post {
+                failure {
+                    script {
+                        error 'Prod stage failed. Aborting pipeline.'
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline completed.'
+        }
+    }
+}
